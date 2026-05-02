@@ -1,3 +1,15 @@
 [tool.pytest.ini_options]
 pythonpath = ["code"]
 testpaths = ["code/test"]
+[project]
+name = "hackerrank-orchestrate-agent"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "google-adk",  # already used by agent; pin to what you use today
+  "pandas",
+  "chromadb>=0.5.0",
+  "sentence-transformers>=3.0.0",
+  "torch",       # CPU wheel ok for this corpus size
+  "python-frontmatter>=1.1.0",
+]
