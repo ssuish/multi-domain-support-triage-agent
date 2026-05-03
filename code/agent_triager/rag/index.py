@@ -4,7 +4,7 @@ from pathlib import Path
 
 import chromadb
 
-from config import RAG_COLLECTION_NAME, RAG_PERSIST_DIR
+from config import RAG_COLLECTION_NAME, RAG_EMBED_BATCH_SIZE, RAG_PERSIST_DIR
 from agent_triager.rag.chunking import chunk_markdown
 from agent_triager.rag.documents import iter_corpus_docs
 from agent_triager.rag.embeddings import embed_query, embed_texts
@@ -43,7 +43,7 @@ def build_index(repo_root: Path) -> tuple[int, int]:
                 }
             )
 
-    batch = 128
+    batch = max(32, RAG_EMBED_BATCH_SIZE * 4)
     for i in range(0, len(ids), batch):
         emb = embed_texts(docs[i : i + batch])
         col.upsert(

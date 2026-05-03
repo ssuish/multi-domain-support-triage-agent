@@ -1,8 +1,6 @@
 import os
 import pandas as pd
 
-from config import ROW_LIMIT, WORKING_DIR
-
 
 def read_support_tickets(file_path=""):
     """Reads support tickets from the fixed support tickets CSV file.
@@ -19,7 +17,7 @@ def read_support_tickets(file_path=""):
             raise Exception(
                 f'Only "{allowed_rel_path}" is permitted for read_support_tickets'
             )
-        file_path_abs = os.path.abspath(os.path.join(WORKING_DIR, allowed_rel_path))
+        file_path_abs = os.path.abspath(allowed_rel_path)
         if not os.path.isfile(file_path_abs):
             raise Exception(
                 f'File not found or is not a regular file: "{allowed_rel_path}"'
