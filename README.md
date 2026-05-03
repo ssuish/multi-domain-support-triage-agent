@@ -13,11 +13,12 @@ Read [`problem_statement.md`](./problem_statement.md) for the full task spec, in
 1. [Repository layout](#repository-layout)
 2. [What you need to build](#what-you-need-to-build)
 3. [Where your code goes](#where-your-code-goes)
-4. [Quickstart](#quickstart)
-5. [Chat transcript logging](#chat-transcript-logging)
-6. [Submission](#submission)
-7. [Judge interview](#judge-interview)
-8. [Evaluation criteria](#evaluation-criteria)
+4. [Agent implementation (this repo)](#agent-implementation-this-repo)
+5. [Quickstart](#quickstart)
+6. [Chat transcript logging](#chat-transcript-logging)
+7. [Submission](#submission)
+8. [Judge interview](#judge-interview)
+9. [Evaluation criteria](#evaluation-criteria)
 
 ---
 
@@ -28,8 +29,10 @@ Read [`problem_statement.md`](./problem_statement.md) for the full task spec, in
 ├── AGENTS.md                       # Rules for AI coding tools + transcript logging
 ├── problem_statement.md            # Full task description and I/O schema
 ├── README.md                       # You are here
-├── code/                           # ← Build your agent here
-│   └── main.py                     #   Entry point (rename/extend as you like)
+├── code/                           # ← Agent implementation (see code/README.md)
+│   ├── README.md                   #   Install, RAG index, run instructions
+│   ├── main.py                     #   Batch entry point
+│   └── agent_triager/              #   ADK agent, tools, RAG modules
 ├── data/                           # Local-only support corpus (no network needed)
 │   ├── hackerrank/                 #   HackerRank help center
 │   ├── claude/                     #   Claude Help Center export
@@ -67,14 +70,27 @@ Beyond that you are free to bring your own approach — RAG, vector DBs, tool us
 
 ## Where your code goes
 
-All of your work belongs in [`code/`](./code/). The repo ships with an empty `code/main.py` you can grow into your full agent — add more modules (`agent.py`, `retriever.py`, `classifier.py`, etc.) next to it as needed.
+All of your work belongs in [`code/`](./code/). This checkout includes a reference **Google ADK** agent (sequential retrieve → structured triage) plus local Chroma RAG over `data/`.
+
+**Operator guide:** [`code/README.md`](./code/README.md) — dependencies, building the vector index, running `main.py`, tests, and troubleshooting.
 
 Conventions:
 
-- Put a **README inside `code/`** describing how to install dependencies and run your agent.
+- Keep [`code/README.md`](./code/README.md) accurate for anyone reproducing your submission.
 - Read secrets **from environment variables only** (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, …). Copy `.env.example` → `.env` (already gitignored) if you keep one. **Never hardcode keys.**
 - Be **deterministic** where possible. Seed any random sampling.
 - Write responses to `support_tickets/output.csv`.
+
+---
+
+## Agent implementation (this repo)
+
+The shipped agent is documented in **[`code/README.md`](./code/README.md)**. In short:
+
+1. Install Python deps from the repo root (`pip install .`).
+2. Build the local RAG index: `python code/build_rag_index.py`.
+3. Set API credentials (see `code/README.md` → Environment).
+4. Run batch triage: `python code/main.py` → `support_tickets/output.csv`.
 
 ---
 
