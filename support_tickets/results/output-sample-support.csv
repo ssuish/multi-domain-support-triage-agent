@@ -1,0 +1,74 @@
+issue,subject,company,response,product_area,status,request_type,justification
+I notice that people I assigned the test in October of 2025 have not received new tests. How long do the tests stay active in the system.,Test Active in the system,hackerrank,"The duration a test remains active in the HackerRank system is primarily controlled by two settings: the overall Test Expiration Time and the individual Invite Expiry.
+
+1. **Test Expiration Time**: This defines the window during which the test itself is active. You can check this by going to the **Tests** tab, opening your specific test, and navigating to **Settings > General**. Here, you will find the **Start date & time** and **End date & time**. If the end date has passed, the test is expired, meaning candidates can no longer access it and no new invites can be sent.
+
+2. **Invite Expiry**: By default, invitation links are set to **Never** expire, meaning they remain valid as long as the overall test is active. However, recruiters can set custom duration limits (e.g., 7 days) or a fixed end date for specific invitations. You can check if this is enabled under **Settings > Test Invites**.
+
+To troubleshoot why candidates from October 2025 have not received or cannot access tests, I recommend checking the **End date** in the test settings or looking at the **Invite Valid To** field in your candidate reports to see if a specific expiration was applied to those links. Additionally, ensure the test is still in **Published** status and has not been moved to **Draft**.",Test Management,replied,product_issue,Test Expiration Time settings (Start/End dates) and their effects are documented in data/hackerrank/screen/managing-tests/2979262079-modify-test-expiration-time.md. The default 'Never' expiry for invitations and how to set custom expiries are found in data/hackerrank/screen/invite-candidates/6027855406-inviting-candidates-to-a-test.md and data/hackerrank/screen/test-settings/9544354489-configure-test-invites-settings-for-tests.md. The 'Invite Valid To' field for reporting is cited from data/hackerrank/settings/user-account-settings-and-preferences/5213013268-report-settings.md.
+site is down & none of the pages are accessible,No Subject,none,"We have received your report that the site is down and inaccessible. We have escalated this to our engineering team as a production-critical issue for immediate investigation. If you are using Claude, you can check for confirmed incidents at status.claude.com. For HackerRank users, please note that issues blocking core functionality are treated with the highest urgency.",System Availability,escalated,product_issue,"The issue involves a site-wide outage, which is a production-critical risk requiring escalation. Evidence: Claude incidents are tracked at status.claude.com (data/claude/claude/troubleshooting/12466728-troubleshoot-claude-error-messages.md) and HackerRank prioritizes issues blocking core functionality as critical (data/hackerrank/settings/user-account-settings-and-preferences/8440817776-hackerrank%27s-approach-to-accessibility.md)."
+"I'm noticing that you all have many default versions of roles. (e.g. front end developer for react, angular, vue.js, etc.) What do you consider best practice 
+for when to create a new test versus create a variant of the test? What are the advantages and disadvantages of using variants?","When should I create a variant versus
+ have a different test?",hackerrank,"Best practice is to use **Test Variants** when you want to design a single assessment that adapts to different candidate profiles within the same core role. For example, if you are hiring a 'Front End Developer' but need to assess candidates on different tech stacks like React, Angular, or Vue.js, variants allow you to route them to the relevant content using a single setup.
+
+**Advantages of using Variants:**
+- **Efficiency:** Eliminates the need to manage and track multiple separate tests for the same hiring pipeline.
+- **Personalization:** Ensures candidates are only assessed on content relevant to their specific background.
+- **Reduced Maintenance:** Centralizes your assessment management and reduces overhead when updating tests.
+- **Clean Reporting:** Insights stay role-specific as reports reflect only the specific variant the candidate attempted.
+
+**Disadvantages and Constraints:**
+- **Minimum Requirement:** A variant-based test must have at least two variants.
+- **Routing Dependency:** Variants are not visible to candidates until you configure the routing logic (e.g., a qualifying question like 'What is your primary language?').
+
+In contrast, you should create a **New Test** for fundamentally different roles (e.g., Sales vs. Engineering) that do not share a candidate pool or require routing from a single entry point.",Managing Tests,replied,product_issue,"The best practices and advantages/disadvantages are cited from data/hackerrank/screen/managing-tests/7530103378-test-variants.md (benefits of efficiency, personalization, and requirement for at least two variants) and data/hackerrank/general-help/release-notes/3121307537-july-2025-release-notes.md (examples of tech stacks and reduced maintenance overhead)."
+"Hi there
+
+We have sent a candidate a Hackerrank assessment already, but we have been informed that they require extra time. As the assessment is 105 minutes, they need an extra 50% extra time added (so around 53 minutes) in addition.
+
+Please can you provide step-by-step instruction on how we are to reinvite them.
+
+Do we find their profile in 'Candidates' , put in Add time 53 minutes and then click 'reinvite' and send the email? The email to the candidate says 105 minutes as the duration though still so not sure how we can check?
+
+Thanks","How to reinvite candidate to Hackerrank 
+assessment and add extra time",hackerrank,"To ensure the invitation email reflects the updated duration for your candidate, you should use the **Add Time Accommodation** feature rather than the standard 'Add Time' option. Time Accommodation updates both the invite email and the test landing page.
+
+### Step 1: Add Time Accommodation
+1. Log in to your **HackerRank for Work** account.
+2. Go to the **Tests** tab and select the specific test.
+3. Navigate to the **Candidates** tab and select the checkbox next to the candidate.
+4. Click **More > Add Time Accommodation**.
+5. Enter **50** in the percentage field (as accommodations are entered in multiples of five).
+6. Click **Save**.
+
+### Step 2: Reinvite the Candidate
+1. With the candidate still selected in the **Candidates** tab, click **Invite Selected** (or use the reinvite option).
+2. Send the invitation email. The email will now automatically display the updated total duration (158 minutes).
+
+**Note:** If you use 'Add Time' (minutes) instead of 'Add Time Accommodation' (percentage), the system assumes a manual adjustment to a live or completed session, which typically does not update the automated invite template duration field.",Candidate Management,replied,product_issue,The 'Add Time Accommodation' feature is specifically noted to update the test invite email and landing page duration (rel_path: data/hackerrank/screen/managing-tests/4811403281-adding-extra-time-for-candidates.md). The process for reinviting candidates via the Candidates tab is confirmed in documentation regarding retakes (rel_path: data/hackerrank/screen/frequently-asked-questions/4428221834-how-to-allow-candidates-to-retake-a-test%3F.md).
+"i signed up using google login on hackerrank community , so i do not have a separate hackerrank password. please delete my account
+",No Subject,hackerrank,"To delete your HackerRank Community account when you have signed up using a third-party service like Google, you must first set a HackerRank password to confirm the deletion. 
+
+### Step 1: Set a Password
+1. Go to the [HackerRank Community login page](https://www.hackerrank.com/auth/login).
+2. Click **Forgot Password?**.
+3. Enter the email address associated with your Google account and click **Send Reset Link**.
+4. Follow the instructions in the email you receive to create a new password.
+
+### Step 2: Delete Your Account
+1. Log in to [HackerRank Community](https://www.hackerrank.com/) using your email and the new password.
+2. Click your **profile icon** (top-right) and select **Settings**.
+3. Scroll to the **Delete Accounts** section and click **Delete Account**.
+4. Select a reason for deleting and click **Proceed to Delete**.
+5. Enter your newly created **account password**.
+6. Click **Proceed to delete** to confirm.
+
+Please note that this action is permanent and removes all profile data, badges, and submissions. If you need further assistance, you can contact help@hackerrank.com.",Account Management,replied,product_issue,"According to the 'Delete an Account' guide (rel_path: data/hackerrank/hackerrank_community/account-settings/manage-account/5618101592-delete-an-account.md), users who signed up via third-party accounts (Google, GitHub, Facebook) must set a password via the 'Resetting password' process before they can delete their account. The password is required in step 8 of the deletion workflow."
+"One of my claude conversations has some private info, i forgot to make a temporary chat, is there anything
+ else that can be done? like delete etc?",No Subject,claude,"You can remove conversations containing private information by deleting them from your history. To delete a conversation, navigate to your chat history at [claude.ai/recents](https://claude.ai/recents). Hover over the specific conversation you want to remove, check the selection box, and click the ""Delete Selected"" button. Once deleted, the conversation is removed from your visible history and, if applicable, from Claude’s memory synthesis. 
+
+For future sensitive discussions, please use the ""Incognito chat"" feature (indicated by a ghost icon in the upper right corner when starting a new chat). Incognito chats are temporary and are not saved to your chat history.",conversation-management,replied,product_issue,Instructions for deleting conversations in bulk and individually are found in data/claude/claude/conversation-management/8230524-how-can-i-delete-or-rename-a-conversation.md. Information regarding incognito chats as temporary conversations is found in data/claude/claude/conversation-management/12260368-using-incognito-chats.md. The effect of deletion on memory synthesis is cited from data/claude/claude/conversation-management/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context.md.
+What is the name of the actor in Iron Man?,"Urgent, please help",none,"Thank you for reaching out. Unfortunately, I am only able to provide assistance regarding our official product documentation and services. Your question about the actor in Iron Man is outside the scope of our support capabilities. Please let me know if you have any questions related to our products.",Off-Topic,replied,invalid,"The search results across all available corpora (Claude, HackerRank, and Visa) contain no information related to 'Iron Man' or Robert Downey Jr, as evidenced by the lack of relevant matches in the retrieval logs. The issue is unrelated to any supported products."
+I bought Visa Traveller's Cheques from Citicorp and they were stolen in Lisbon last night. What do I do?,No Subject,visa,"To address the theft of your Visa Traveller's Cheques in Lisbon, please follow these steps: 1. Notify the Lisbon police immediately to report the theft. 2. Contact Citicorp (the issuing bank) as soon as possible. You can reach them via a collect call at +1-813-623-1709 or by email at citicorp.traveller@visa.com. Customer service representatives are available Monday–Friday, 6:30 am to 2:30 pm EST, though automated verification is available 24/7. 3. Be prepared to provide the cheque serial numbers, where and when you bought them, and details of how the theft occurred. Refunds can typically be arranged within 24 hours. 4. If you need local assistance in Portugal, you can call the Visa support line at 800 8 11 824.",Traveller's Cheques,replied,product_issue,The requirement to notify police and contact the issuing bank is found in data/visa/support/consumer/travelers-cheques.md. Specific contact details and hours for Citicorp are cited from data/visa/support/consumer/travelers-cheques.md. The list of required information for a refund is found in data/visa/support/consumer/travelers-cheques.md. The Portugal-specific support number 800 8 11 824 is listed in data/visa/support.md.
+Where can I report a lost or stolen Visa card from India?,Card stolen,visa,"To report your lost or stolen Visa card in India, you can call Visa at 000-800-100-1219. Alternatively, you can call +1 303 967 1090 from anywhere in the world for assistance. You can also report it online by visiting the Visa India Lost or Stolen card support page. Visa’s Global Customer Assistance Services (GCAS) can help block your card within 30 minutes, provide emergency cash, and arrange for a replacement card.",Consumer Support,replied,product_issue,The India-specific phone number (000-800-100-1219) and the online support link are provided in data/visa/support.md. Information regarding the global support number (+1 303 967 1090) and services like blocking the card within 30 minutes or emergency cash is sourced from data/visa/support/consumer/travel-support.md.
+Thank you for helping me,No Subject,none,"You're very welcome! We are glad we could assist you. If you have any further questions or need additional support in the future, please don't hesitate to reach out. Have a wonderful day!",general_support,replied,invalid,"The ticket contains only a generic expression of gratitude ('Thank you for helping me') without any actionable request, product details, or specific subject matter. Retrieval from the knowledge base across HackerRank, Claude, and Visa documentation (e.g., data/hackerrank/general-help/additional-resources/6477583642-ensuring-a-great-candidate-experience.md and data/claude/claude/account-management/9015913-how-to-get-support.md) provides standard support workflows but does not contain specific protocols for non-actionable messages or tickets missing company/subject metadata."
