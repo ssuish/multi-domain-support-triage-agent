@@ -5,30 +5,16 @@ import io
 import logging
 import os
 import uuid
-from time import perf_counter
 
 import pandas as pd
 import streamlit as st
-from google.genai import types
-from pydantic import ValidationError
 
-from agent_triager.schema import PredictionOut, SupportTicketInput
+from agent_triager.schema import SupportTicketInput
+from agent_triager.triage_service import OUTPUT_COLUMNS, triage_ticket
 from config import RAG_PERSIST_DIR
-from main import APP_NAME, runner, session_service
 from paths import REPO_ROOT
 
 logger = logging.getLogger(__name__)
-
-OUTPUT_COLUMNS = [
-    "issue",
-    "subject",
-    "company",
-    "response",
-    "product_area",
-    "status",
-    "request_type",
-    "justification",
-]
 
 REQUIRED_CSV_COLUMNS = ["Issue", "Subject", "Company"]
 
@@ -62,23 +48,6 @@ def _humanize(value: str | None, labels: dict[str, str]) -> str:
     if not value:
         return "—"
     return labels.get(value, value.replace("_", " ").title())
-
-
-def _escalated_fallback(ticket: SupportTicketInput, *, internal_reason: str) -> dict:
-    ticket_dump = ticket.model_dump(mode="json")
-    return {
-        "issue": ticket_dump["issue"],
-        "subject": ticket_dump["subject"],
-        "company": ticket_dump["company"],
-        "response": (
-            "We could not finish automated triage for this ticket. "
-            "A team member will review it."
-        ),
-        "product_area": "system",
-        "status": "escalated",
-        "request_type": "product_issue",
-        "justification": internal_reason,
-    }
 
 
 def _friendly_error_message(exc: BaseException) -> str:
@@ -128,57 +97,6 @@ def _render_setup_banner() -> bool:
     return False
 
 
-async def triage_one(
-    ticket: SupportTicketInput,
-    *,
-    user_id: str,
-    session_id: str,
-) -> dict:
-    await session_service.create_session(
-        app_name=APP_NAME,
-        user_id=user_id,
-        session_id=session_id,
-        state=ticket.model_dump(mode="json"),
-    )
-
-    async for _event in runner.run_async(
-        user_id=user_id,
-        session_id=session_id,
-        new_message=types.Content(
-            role="user",
-            parts=[types.Part.from_text(text=ticket.model_dump_json())],
-        ),
-    ):
-        pass
-
-    session = await session_service.get_session(
-        app_name=APP_NAME,
-        user_id=user_id,
-        session_id=session_id,
-    )
-
-    raw = session.state.get("triage_result")
-    ticket_dump = ticket.model_dump(mode="json")
-
-    if raw is None:
-        return _escalated_fallback(
-            ticket,
-            internal_reason="triage_result missing from session state after agent run.",
-        )
-
-    try:
-        triage = PredictionOut.model_validate(raw) if isinstance(raw, dict) else raw
-        return triage.model_dump(mode="json")
-    except ValidationError:
-        return _escalated_fallback(
-            ticket,
-            internal_reason=(
-                "PredictionOut validation failed for agent output: "
-                f"{list(raw.keys()) if isinstance(raw, dict) else type(raw)}."
-            ),
-        )
-
-
 def _run_triage_safe(
     ticket: SupportTicketInput,
     *,
@@ -186,13 +104,17 @@ def _run_triage_safe(
     session_id: str,
 ) -> tuple[dict, str | None]:
     try:
-        result = asyncio.run(
-            triage_one(ticket, user_id=user_id, session_id=session_id)
+        outcome = asyncio.run(
+            triage_ticket(ticket, user_id=user_id, session_id=session_id)
         )
-        return result, None
+        if outcome.error is not None:
+            return outcome.row, _friendly_error_message(outcome.error)
+        return outcome.row, None
     except Exception as exc:
         logger.exception("triage failed for subject=%r", ticket.subject)
-        return _escalated_fallback(ticket, internal_reason=str(exc)), _friendly_error_message(
+        from agent_triager.triage_service import system_escalated_row
+
+        return system_escalated_row(ticket, internal_reason=str(exc)), _friendly_error_message(
             exc
         )
 
