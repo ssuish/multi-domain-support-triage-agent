@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from config import RAG_PERSIST_DIR, RAG_TOP_K
+from agent_triager.rag.hits import format_query_hits
 from agent_triager.rag.index import query_index
 
 
@@ -30,23 +31,5 @@ def search_knowledge_base(
 
     k = top_k if top_k is not None else RAG_TOP_K
     raw = query_index(repo_root, query.strip(), k, corpus)
-    ids = (raw.get("ids") or [[]])[0]
-    texts = (raw.get("documents") or [[]])[0]
-    metas = (raw.get("metadatas") or [[]])[0]
-    dists = (raw.get("distances") or [[]])[0]
-
-    hits = []
-    for i, cid in enumerate(ids):
-        meta = dict(metas[i] or {})
-        hits.append(
-            {
-                "chunk_id": cid,
-                "text": texts[i],
-                "rel_path": meta.get("rel_path", ""),
-                "source_url": meta.get("source_url", ""),
-                "title": meta.get("title", ""),
-                "corpus": meta.get("corpus", ""),
-                "distance": dists[i] if i < len(dists) else None,
-            }
-        )
+    hits = format_query_hits(raw)
     return json.dumps(hits, ensure_ascii=False)
