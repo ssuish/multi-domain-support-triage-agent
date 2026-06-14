@@ -19,7 +19,7 @@ Python 3.11+, **Google ADK**, **Chroma**, **sentence-transformers** / EmbeddingG
 
 | Doc | What it covers |
 | --- | --- |
-| [`code/README.md`](code/README.md) | Architecture, install, RAG index build, `main.py`, tests, troubleshooting |
+| [`code/README.md`](code/README.md) | Architecture, install, RAG index build, `main.py`, troubleshooting |
 | [`problem_statement.md`](problem_statement.md) | Task spec, I/O schema, constraints, submission context |
 | [`evalutation_criteria.md`](evalutation_criteria.md) | Scoring rubric |
 
@@ -28,31 +28,42 @@ Python 3.11+, **Google ADK**, **Chroma**, **sentence-transformers** / EmbeddingG
 Run from the **repository root** so `data/`, `support_tickets/`, and `code/.chroma` resolve correctly.
 
 ```bash
-pip install .
-python code/build_rag_index.py
+pip install -e .
+cp .env.example .env   # add GOOGLE_API_KEY
+python scripts/build_rag_index.py
 python code/main.py
 ```
 
 - **Input:** `support_tickets/support_tickets.csv` (for labeled regression rows, point `input_csv` in `main.py` at `sample_support_tickets.csv` — see [`code/README.md`](code/README.md)).
 - **Output:** `support_tickets/output.csv`.
+- **Telemetry:** per-run JSONL logs in `runs/` (gitignored).
 
 ## Repository layout
 
 ```
 .
 ├── AGENTS.md                       # AI-tool rules + transcript logging
+├── .env.example                    # Env var template (copy to .env)
 ├── problem_statement.md            # Challenge spec and I/O schema
 ├── README.md                       # Product overview (this file)
+├── pyproject.toml                  # Dependencies + package config
+├── scripts/
+│   ├── build_rag_index.py          # Build Chroma index from data/
+│   └── get_col_count.py            # Debug: print chunk count
 ├── code/                           # Implementation (see code/README.md)
 │   ├── README.md                   # Engineering deep-dive
 │   ├── main.py                     # Batch entry point
+│   ├── config.py                   # RAG tunables
+│   ├── paths.py                    # Repo-root path constants
 │   └── agent_triager/              # ADK agent, tools, RAG
 ├── data/                           # Local help-center corpus
 │   ├── hackerrank/
 │   ├── claude/
 │   └── visa/
+├── runs/                           # Batch telemetry JSONL (gitignored)
 └── support_tickets/
     ├── sample_support_tickets.csv  # Labeled examples
     ├── support_tickets.csv         # Challenge inputs
-    └── output.csv                  # Agent predictions
+    ├── results/                    # Golden sample output
+    └── output.csv                  # Agent predictions (gitignored)
 ```

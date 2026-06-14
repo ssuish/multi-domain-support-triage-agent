@@ -1,6 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-dir]
+"" = "code"
+
+[tool.setuptools]
+py-modules = ["config", "paths"]
+
+[tool.setuptools.packages.find]
+where = ["code"]
+include = ["agent_triager*"]
+
 [tool.pytest.ini_options]
 pythonpath = ["code"]
 testpaths = ["code/test"]
+
 [project]
 name = "hackerrank-orchestrate-agent"
 version = "0.1.0"
@@ -13,4 +28,5 @@ dependencies = [
   "torch",
   "python-frontmatter>=1.1.0",
   "pydantic>=2.13.3",
+  "python-dotenv",
 ]

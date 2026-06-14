@@ -14,7 +14,7 @@ def search_knowledge_base(
     top_k: int | None = None,
     corpus: str | None = None,
 ) -> str:
-    """Runs semantic search over the local markdown corpus (Chroma + BGE embeddings).
+    """Runs semantic search over the local markdown corpus (Chroma + EmbeddingGemma).
 
     Args:
         query (str): Natural-language query to retrieve relevant chunks.
@@ -25,7 +25,7 @@ def search_knowledge_base(
     persist = (repo_root / RAG_PERSIST_DIR).resolve()
     if not persist.exists():
         raise Exception(
-            "RAG index missing; from repo root run: python code/build_rag_index.py"
+            "RAG index missing; from repo root run: python scripts/build_rag_index.py"
         )
 
     k = top_k if top_k is not None else RAG_TOP_K

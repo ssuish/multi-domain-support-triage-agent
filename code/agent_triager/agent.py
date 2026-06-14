@@ -1,6 +1,6 @@
 from google.adk.agents import Agent, SequentialAgent
 from agent_triager.tools.search_knowledge_base import search_knowledge_base
-from agent_triager.schema.schemas import SupportTicketInput, PredictionOut
+from agent_triager.schema import PredictionOut, SupportTicketInput
 
 _retrieval_agent = Agent(
     model="gemini-flash-latest",

@@ -1,7 +1,3 @@
-CHARACTER_LIMIT = 10000
-ROW_LIMIT = 1000
-WORKING_DIR = "data"
-
 RAG_DATA_DIR = "data"
 RAG_PERSIST_DIR = "code/.chroma"
 RAG_COLLECTION_NAME = "support_kb"
