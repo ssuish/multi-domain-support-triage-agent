@@ -29,4 +29,6 @@ dependencies = [
   "python-frontmatter>=1.1.0",
   "pydantic>=2.13.3",
   "python-dotenv",
+  "streamlit",
+  "torchvision>=0.26.0",
 ]

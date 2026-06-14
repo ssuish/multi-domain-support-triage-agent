@@ -31,6 +31,17 @@ Run from the **repository root** so `data/`, `support_tickets/`, and `code/.chro
 pip install -e .
 cp .env.example .env   # add GOOGLE_API_KEY
 python scripts/build_rag_index.py
+```
+
+**Web UI (for operators):** submit one ticket or upload a CSV without using the command line.
+
+```bash
+streamlit run code/app.py
+```
+
+**Batch CLI (for automation):**
+
+```bash
 python code/main.py
 ```
 
@@ -52,6 +63,7 @@ python code/main.py
 │   └── get_col_count.py            # Debug: print chunk count
 ├── code/                           # Implementation (see code/README.md)
 │   ├── README.md                   # Engineering deep-dive
+│   ├── app.py                      # Streamlit UI for operators
 │   ├── main.py                     # Batch entry point
 │   ├── config.py                   # RAG tunables
 │   ├── paths.py                    # Repo-root path constants
