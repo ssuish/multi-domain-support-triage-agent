@@ -14,6 +14,125 @@ Terminal batch agent and Streamlit UI for **HackerRank Orchestrate**. Both paths
 | **Shared triage** | `triage_service.py` is the single entry point for `main.py` (batch) and `app.py` (Streamlit). Handles gating, sessions, validation, fallbacks, and telemetry fields. |
 | **Output** | `format_agent` emits structured `PredictionOut` (Pydantic), stored in session state as `triage_result`. |
 
+### Component diagram
+
+```mermaid
+flowchart LR
+    subgraph inputs
+        CSV_IN["support_tickets/*.csv"]
+        FORM["Streamlit form"]
+    end
+
+    subgraph drivers
+        MAIN["main.py"]
+        APP["app.py"]
+    end
+
+    subgraph triage["triage_service.py"]
+        GATE["_run_retrieval_gate"]
+        SESSION["session create + state"]
+        RUN["runner.run_async"]
+        POST["post-run override"]
+    end
+
+    subgraph retrieval
+        BOOT["retrieval_bootstrap.py"]
+        CONF["retrieval_confidence.py"]
+        SKB["search_knowledge_base"]
+    end
+
+    subgraph adk["agent_triager/agent.py"]
+        SEQ["SequentialAgent"]
+        RET["retrieval_agent"]
+        FMT["format_agent"]
+    end
+
+    subgraph rag["agent_triager/rag/"]
+        EMB["embeddings"]
+        IDX["Chroma index"]
+    end
+
+    subgraph persist
+        OUT_CSV["output.csv"]
+        JSONL["runs/*.jsonl"]
+    end
+
+    CSV_IN --> MAIN
+    FORM --> APP
+    MAIN --> triage
+    APP --> triage
+    GATE --> BOOT
+    BOOT --> EMB
+    EMB --> IDX
+    BOOT --> CONF
+    GATE -->|"proceed"| SESSION
+    SESSION --> RUN
+    RUN --> SEQ
+    SEQ --> RET --> FMT
+    RET --> SKB
+    SKB --> IDX
+    FMT --> POST
+    POST --> OUT_CSV
+    triage --> JSONL
+```
+
+### Index build (one-time / on corpus change)
+
+```mermaid
+flowchart LR
+    MD["data/**/*.md"] --> CHUNK["rag/chunking.py"]
+    CHUNK --> DOC["rag/documents.py"]
+    DOC --> EMB["rag/embeddings.py<br/>EmbeddingGemma"]
+    EMB --> BUILD["rag/index.py"]
+    BUILD --> STORE["code/.chroma"]
+    SCRIPT["scripts/build_rag_index.py"] --> BUILD
+```
+
+### Per-ticket workflow (`triage_ticket`)
+
+```mermaid
+flowchart TD
+    START(["triage_ticket"]) --> NORM["normalize_ticket"]
+    NORM --> BOOT["bootstrap_retrieve<br/>+ corpus_filter_for_company"]
+    BOOT --> EVAL["evaluate_retrieval_confidence"]
+
+    EVAL --> C1{is_confident?}
+    C1 -->|yes| PROCEED["gate_action: proceed"]
+    C1 -->|no| CF{used_corpus_filter?}
+
+    CF -->|yes| RETRY["bootstrap_retrieve_retry<br/>RAG_LOW_CONFIDENCE_RETRY_TOP_K"]
+    RETRY --> EVAL2["evaluate_retrieval_confidence"]
+    EVAL2 --> C2{is_confident?}
+    C2 -->|yes| RETRY_OK["gate_action: retry"]
+    C2 -->|no| AUTO1["gate_action: auto_escalate<br/>auto_escalated_row"]
+
+    CF -->|no| AUTO1
+
+    PROCEED --> SESS
+    RETRY_OK --> SESS["create_session<br/>state: ticket + retrieval_evidence"]
+    SESS --> RUN["runner.run_async<br/>retrieval_agent → format_agent"]
+    RUN --> RAW["read triage_result from session"]
+
+    RAW --> C3{present?}
+    C3 -->|no| MISS["outcome: missing_triage_result<br/>system_escalated_row"]
+    C3 -->|yes| C4{PredictionOut valid?}
+    C4 -->|no| VALERR["outcome: validation_error<br/>system_escalated_row"]
+    C4 -->|yes| C5{status replied<br/>AND NOT confident?}
+    C5 -->|yes| OVERRIDE["gate_action: post_override<br/>auto_escalated_row"]
+    C5 -->|no| OK["outcome: ok_validated"]
+
+    AUTO1 --> END(["TriageOutcome"])
+    MISS --> END
+    VALERR --> END
+    OVERRIDE --> END
+    OK --> END
+
+    RUN -.->|exception| EXC["outcome: exception<br/>system_escalated_row"]
+    EXC --> END
+```
+
+Gate thresholds live in `config.py`: `RAG_MIN_HITS`, `RAG_MAX_BEST_DISTANCE`, `RAG_MAX_MEAN_TOP3_DISTANCE`.
+
 ## Project layout
 
 | Path | Role |

@@ -16,6 +16,82 @@ A production-style **batch triage system** that ingests customer support tickets
 
 Python 3.11+, **Google ADK** (`gemini-2.5-flash`), **Chroma**, **sentence-transformers** / EmbeddingGemma, **Streamlit** (operator UI). Details and model IDs in [`code/README.md`](code/README.md).
 
+## Architecture
+
+```mermaid
+flowchart TB
+    subgraph entry["Entry points"]
+        CLI["main.py<br/>batch CSV"]
+        UI["app.py<br/>Streamlit"]
+    end
+
+    subgraph core["Shared triage core"]
+        TS["triage_service.py"]
+        RB["retrieval_bootstrap.py"]
+        RC["retrieval_confidence.py"]
+    end
+
+    subgraph agents["Google ADK"]
+        RA["retrieval_agent"]
+        FA["format_agent"]
+    end
+
+    subgraph knowledge["Local knowledge base"]
+        DATA["data/<br/>hackerrank · claude · visa"]
+        CHROMA["code/.chroma<br/>Chroma index"]
+        TOOL["search_knowledge_base"]
+    end
+
+    subgraph output["Outputs"]
+        CSV["support_tickets/output.csv"]
+        LOGS["runs/*.jsonl"]
+    end
+
+    CLI --> TS
+    UI --> TS
+    TS --> RB
+    RB --> CHROMA
+    RB --> RC
+    RC -->|"confident"| RA
+    RC -->|"weak hits"| ESC["auto-escalated row"]
+    RA --> TOOL
+    TOOL --> CHROMA
+    RA --> FA
+    FA --> TS
+    TS --> CSV
+    TS --> LOGS
+    DATA -.->|"build_rag_index.py"| CHROMA
+    ESC --> CSV
+```
+
+## Workflow
+
+Per-ticket path (same for CLI batch and Streamlit):
+
+```mermaid
+flowchart TD
+    IN["Ticket in<br/>Issue · Subject · Company"] --> NORM["Normalize company"]
+    NORM --> BOOT["Bootstrap semantic search<br/>corpus filter when known"]
+    BOOT --> GATE{"Retrieval<br/>confident?"}
+
+    GATE -->|"no + corpus filter"| RETRY["Retry with wider top_k"]
+    RETRY --> GATE2{"Confident<br/>now?"}
+    GATE2 -->|"no"| AUTO["Auto-escalate<br/>safe response"]
+    GATE -->|"no + no filter"| AUTO
+    GATE2 -->|"yes"| AGENT
+    GATE -->|"yes"| AGENT["ADK pipeline"]
+
+    AGENT --> R["retrieval_agent<br/>refine search"]
+    R --> F["format_agent<br/>PredictionOut"]
+    F --> VAL{"Valid output?"}
+    VAL -->|"missing / invalid"| SYS["System escalate"]
+    VAL -->|"status replied + weak evidence"| AUTO
+    VAL -->|"ok"| OUT["Prediction row"]
+    AUTO --> OUT
+    SYS --> OUT
+    OUT --> WRITE["CSV + telemetry JSONL"]
+```
+
 ## Documentation
 
 | Doc | What it covers |
