@@ -3,7 +3,7 @@ from agent_triager.tools.search_knowledge_base import search_knowledge_base
 from agent_triager.schema import PredictionOut, SupportTicketInput
 
 _retrieval_agent = Agent(
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     name="retrieval_agent",
     description="Searches internal docs and surfaces relevant chunks for triage.",
     instruction="""
@@ -20,7 +20,7 @@ _retrieval_agent = Agent(
 )
 
 _format_agent = Agent(
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     name="format_agent",
     description="Produces a grounded PredictionOut from retrieval evidence.",
     instruction="""

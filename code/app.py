@@ -14,6 +14,11 @@ from agent_triager.triage_service import OUTPUT_COLUMNS, triage_ticket
 from config import RAG_PERSIST_DIR
 from paths import REPO_ROOT
 
+from dotenv import load_dotenv
+from paths import REPO_ROOT, ENV_FILE
+
+load_dotenv(ENV_FILE)
+
 logger = logging.getLogger(__name__)
 
 REQUIRED_CSV_COLUMNS = ["Issue", "Subject", "Company"]
@@ -62,10 +67,11 @@ def _friendly_error_message(exc: BaseException) -> str:
         token in message
         for token in ("api key", "api_key", "unauthorized", "authentication", "401")
     ):
-        return (
-            "Google API key is missing or invalid. Add `GOOGLE_API_KEY` to your `.env` file."
-        )
-    if any(token in message for token in ("quota", "rate limit", "429", "resource exhausted")):
+        return "Google API key is missing or invalid. Add `GOOGLE_API_KEY` to your `.env` file."
+    if any(
+        token in message
+        for token in ("quota", "rate limit", "429", "resource exhausted")
+    ):
         return "The AI service is temporarily unavailable. Wait a moment and try again."
     if any(
         token in message
@@ -114,9 +120,9 @@ def _run_triage_safe(
         logger.exception("triage failed for subject=%r", ticket.subject)
         from agent_triager.triage_service import system_escalated_row
 
-        return system_escalated_row(ticket, internal_reason=str(exc)), _friendly_error_message(
-            exc
-        )
+        return system_escalated_row(
+            ticket, internal_reason=str(exc)
+        ), _friendly_error_message(exc)
 
 
 def _render_result(result: dict, *, show_error: str | None = None) -> None:
