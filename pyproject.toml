@@ -25,6 +25,7 @@ dependencies = [
   "pandas",
   "chromadb>=0.5.0",
   "sentence-transformers>=3.0.0",
+  "transformers>=5.8.0",
   "torch",
   "python-frontmatter>=1.1.0",
   "pydantic>=2.13.3",

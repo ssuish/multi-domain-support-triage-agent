@@ -233,6 +233,7 @@ Covers retrieval confidence thresholds and triage service gate behavior (`code/t
 | Wrong CSV paths / missing `data/` | Run commands from repo root, not from inside `code/` only. |
 | Model or API errors | Confirm env vars and quota; check ADK release notes for model id renames. |
 | Everything escalates | Tune `RAG_MAX_BEST_DISTANCE` / `RAG_MAX_MEAN_TOP3_DISTANCE` in `config.py` after inspecting bootstrap distances on sample tickets. |
+| Hundreds of `[transformers] Accessing __path__ from .models.*.image_processing_*` lines on first triage/index build | Harmless upstream noise in `transformers<5.8.0`. Reinstall with `transformers>=5.8.0` (see `pyproject.toml`). |
 
 ## Design write-up (planned)
 
